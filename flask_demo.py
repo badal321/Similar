@@ -4,14 +4,18 @@ Created on Thu Jun 20 18:48:36 2019
 
 @author: t-baagra
 """
-
 import numpy as np 
 import flask 
 import io 
 import nltk
 import numpy as np
-nltk.download('stopwords')
-stopwords = stopwords.words("english")
+import pickle
+from DocSim import DocSim
+import json
+# nltk.download('stopwords')
+# stopwords = stopwords.words("english")
+stopwords=['the']
+from gensim.models import Word2Vec, Phrases, phrases, KeyedVectors
 import io
 import requests
 import pandas as pd
@@ -19,7 +23,7 @@ from flask import Flask,abort,jsonify, request
 from wtforms import Form, StringField
 
 
-ds=pickle.load(open(r"C:\Users\t-baagra\Desktop\ChillDev\Duplicate questions\model.pkl","rb"))
+ds=pickle.load(open(r"./model.pkl","rb"))
 app=Flask(__name__)
 
 class inputForm(Form):
@@ -28,9 +32,9 @@ class inputForm(Form):
 
 @app.route('/api',methods=['POST'])
 def make_predict1():
-    form = inputForm(request.body)
-    errorMessage = form.errorMessage.data
-    keyword = form.keyword.data
+    form = inputForm(request.form)
+    errorMessage = form.errorMessage.data   #   "errorMessage" yeh key hoga postman mein
+    keyword = form.keyword.data     #   "keyword" yeh key hoga postman mein
     source_doc = "Qualify lead button not visible"
     source_doc=source_doc.lower()
     source_doc=source_doc.strip()
@@ -149,8 +153,8 @@ def make_predict1():
     for item in final_list:
         if(item != 0.0):
             ans.append(item)
-    return ans
-make_predict1()
+    my_json = json.dumps(ans)
+    return my_json
 
 
 if __name__=='__main__':
