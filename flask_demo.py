@@ -15,14 +15,22 @@ stopwords = stopwords.words("english")
 import io
 import requests
 import pandas as pd
-from flask import Flask,abort,jsonify
+from flask import Flask,abort,jsonify, request
+from wtforms import Form, StringField
 
 
 ds=pickle.load(open(r"C:\Users\t-baagra\Desktop\ChillDev\Duplicate questions\model.pkl","rb"))
 app=Flask(__name__)
 
+class inputForm(Form):
+    errorMessage = StringField('errorMessage')
+    keyword = StringField('keyword')
+
 @app.route('/api',methods=['POST'])
 def make_predict1():
+    form = inputForm(request.body)
+    errorMessage = form.errorMessage.data
+    keyword = form.keyword.data
     source_doc = "Qualify lead button not visible"
     source_doc=source_doc.lower()
     source_doc=source_doc.strip()
